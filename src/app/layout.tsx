@@ -1,3 +1,4 @@
+import { Container } from '@mui/material';
 import type { Metadata } from 'next';
 
 import { RootProviders } from '@/providers/RootProviders';
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <RootProviders>{children}</RootProviders>
+        <RootProviders>
+          <Container sx={{ my: 5 }}>{children}</Container>
+        </RootProviders>
       </body>
     </html>
   );
