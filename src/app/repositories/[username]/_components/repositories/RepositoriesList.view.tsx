@@ -65,22 +65,23 @@ export function RepositoriesListView({ username }: Props) {
                 <ListItemText
                   primary={repository.name}
                   secondary={
-                    <Typography
-                      sx={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
+                    <Typography component="span" variant="body2" color="text.primary">
                       {repository.description}
                     </Typography>
                   }
                 />
                 {repository.hasKeywords && (
-                  <Stack direction="row" spacing={1}>
+                  <Stack direction="row" flexWrap={'wrap'}>
                     {repository.keywords
                       ?.split(',')
                       ?.map((keyword) => (
-                        <Chip color="primary" size={'small'} key={keyword} label={keyword} />
+                        <Chip
+                          color="primary"
+                          size={'small'}
+                          key={keyword}
+                          label={keyword}
+                          sx={{ m: 0.5, ml: 0 }}
+                        />
                       ))}
                   </Stack>
                 )}
