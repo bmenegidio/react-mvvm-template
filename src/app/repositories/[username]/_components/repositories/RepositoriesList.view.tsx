@@ -9,10 +9,12 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Fragment, useEffect } from 'react';
+import { asValue } from 'awilix';
+import { Fragment } from 'react';
 
 import { useRepositoriesListViewModel } from '@/app/repositories/[username]/_components/repositories/useRepositoriesList.view-model';
 import { useRepositoriesListViewModelInjectionToken } from '@/app/repositories/[username]/_components/repositories/view-model-injection-token';
+import { Loading } from '@/components/feedback/loading/Loading';
 import { dependencyInjectionContainer } from '@/DI/ioc';
 
 type Props = {
@@ -20,18 +22,32 @@ type Props = {
 };
 
 export function RepositoriesListView({ username }: Props) {
-  const { repositories, handleFetchRepositoriesByUsername } = dependencyInjectionContainer.resolve<
+  const listViewScope = dependencyInjectionContainer.createScope();
+  listViewScope.register({
+    username: asValue(username),
+  });
+
+  const { repositories, isError, isLoading } = listViewScope.resolve<
     ReturnType<typeof useRepositoriesListViewModel>
   >(useRepositoriesListViewModelInjectionToken);
 
-  useEffect(() => {
-    void handleFetchRepositoriesByUsername(username);
-  }, []);
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError) {
+    return (
+      <Typography>
+        Não foi possível encontrar repositórios para o usuário <strong>{username}</strong>, por
+        favor, verifique o nome do usuário e tente novamente.
+      </Typography>
+    );
+  }
 
   return (
     <>
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {repositories.length === 0 && (
+        {repositories?.length === 0 && (
           <ListItem sx={{ textAlign: 'center' }}>
             <ListItemText>
               Nenhum repositório encontrado para o usuário <strong>{username}</strong>
@@ -39,7 +55,7 @@ export function RepositoriesListView({ username }: Props) {
           </ListItem>
         )}
 
-        {repositories.map((repository, repositoryIndex) => (
+        {repositories?.map((repository, repositoryIndex) => (
           <Fragment key={repository.id}>
             <ListItem alignItems="flex-start">
               <ListItemAvatar>
