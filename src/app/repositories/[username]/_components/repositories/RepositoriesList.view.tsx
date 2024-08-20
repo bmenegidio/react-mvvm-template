@@ -12,6 +12,7 @@ import {
 import { Fragment, useEffect } from 'react';
 
 import { useRepositoriesListViewModel } from '@/app/repositories/[username]/_components/repositories/useRepositoriesList.view-model';
+import { useRepositoriesListViewModelInjectionToken } from '@/app/repositories/[username]/_components/repositories/view-model-injection-token';
 import { dependencyInjectionContainer } from '@/DI/ioc';
 
 type Props = {
@@ -21,7 +22,7 @@ type Props = {
 export function RepositoriesListView({ username }: Props) {
   const { repositories, handleFetchRepositoriesByUsername } = dependencyInjectionContainer.resolve<
     ReturnType<typeof useRepositoriesListViewModel>
-  >('useRepositoriesListViewModel');
+  >(useRepositoriesListViewModelInjectionToken);
 
   useEffect(() => {
     void handleFetchRepositoriesByUsername(username);
