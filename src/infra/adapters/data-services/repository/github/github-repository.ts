@@ -19,10 +19,18 @@ function toModel(githubRepositories: GithubResponse[]): RepositoryModel[] {
 
 export function githubRepositoryDataServiceAdapter(): RepositoryDataService {
   async function fetchByUsername(username: string): Promise<RepositoryModel[]> {
-    const httpResponse = await fetch(`https://api.github.com/users/${username}/repos`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const queryParams = new URLSearchParams();
+    queryParams.set('sort', 'created');
+    queryParams.set('direction', 'desc');
+    queryParams.set('per_page', '100');
+
+    const httpResponse = await fetch(
+      `https://api.github.com/users/${username}/repos?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
     const jsonData = (await httpResponse.json()) as GithubResponse[];
     return toModel(jsonData);
   }
