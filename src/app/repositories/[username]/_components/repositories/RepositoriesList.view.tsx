@@ -1,12 +1,16 @@
+import { Search } from '@mui/icons-material';
 import {
   Avatar,
   Chip,
   Divider,
+  Grid,
+  InputAdornment,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { asValue } from 'awilix';
@@ -27,7 +31,7 @@ export function RepositoriesListView({ username }: Props) {
     username: asValue(username),
   });
 
-  const { repositories, isError, isLoading } = listViewScope.resolve<
+  const { repositories, isError, isLoading, handleFilterChange } = listViewScope.resolve<
     ReturnType<typeof useRepositoriesListViewModel>
   >(useRepositoriesListViewModelInjectionToken);
 
@@ -47,6 +51,29 @@ export function RepositoriesListView({ username }: Props) {
   return (
     <>
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        <Grid padding={2} spacing={2} container>
+          <Grid xs={12} item>
+            <TextField
+              label={'Pesquise'}
+              placeholder={'Digite pelo nome ou descrição..'}
+              size={'small'}
+              autoComplete={'off'}
+              onChange={handleFilterChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+
+          <Grid xs={12} item>
+            <Divider />
+          </Grid>
+        </Grid>
+
         {repositories?.length === 0 && (
           <ListItem sx={{ textAlign: 'center' }}>
             <ListItemText>

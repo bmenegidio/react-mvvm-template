@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { ChangeEvent, useDeferredValue, useMemo, useState } from 'react';
 
 import { RepositoryModel } from '@/core/models/repository/repository';
 import { RepositoryDataService } from '@/core/protocols/data-services/repository/repository';
@@ -11,7 +12,7 @@ type Dependencies = {
 
 export function useRepositoriesListViewModel({ username, repositoryDataService }: Dependencies) {
   const {
-    data: repositories,
+    data: repositoriesList,
     isError,
     isLoading,
   } = useQuery<RepositoryModel[]>({
@@ -19,9 +20,27 @@ export function useRepositoriesListViewModel({ username, repositoryDataService }
     queryFn: () => repositoryDataService.fetchByUsername(username),
   });
 
+  const [filter, setFilter] = useState('');
+  const deferredFilter = useDeferredValue(filter);
+  const filteredRepositories = useMemo(() => {
+    if (!Array.isArray(repositoriesList)) return [];
+    if (!deferredFilter) return repositoriesList;
+
+    return repositoriesList.filter(
+      (repo) =>
+        repo.name?.toLowerCase().includes(deferredFilter.toLowerCase()) ||
+        repo.description?.toLowerCase().includes(deferredFilter.toLowerCase()),
+    );
+  }, [repositoriesList, deferredFilter]);
+
+  function handleFilterChange(event: ChangeEvent<HTMLInputElement>) {
+    setFilter(event.target.value);
+  }
+
   return {
-    repositories,
+    repositories: filteredRepositories,
     isError,
     isLoading,
+    handleFilterChange,
   };
 }
