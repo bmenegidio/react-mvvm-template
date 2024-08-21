@@ -19,4 +19,9 @@ export const theme = createTheme({
   typography: {
     fontFamily: roboto.style.fontFamily,
   },
+  components: {
+    MuiTextField: {
+      defaultProps: { variant: 'outlined', fullWidth: true },
+    },
+  },
 });
